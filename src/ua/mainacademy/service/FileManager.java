@@ -3,6 +3,8 @@ package ua.mainacademy.service;
 import ua.mainacademy.model.ConnectionInfo;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,9 +45,9 @@ public class FileManager {
             while ((line = bufferedReader.readLine()) != null) {
                 String[] elements = line.split(" ");
                 ConnectionInfo connectionInfo = new ConnectionInfo(
-                  Integer.valueOf(elements[0]),
-                  Long.valueOf(elements[1]),
-                  elements[2]
+                        Integer.valueOf(elements[0]),
+                        Long.valueOf(elements[1]),
+                        elements[2]
                 );
                 result.add(connectionInfo);
             }
@@ -58,5 +60,45 @@ public class FileManager {
     private static boolean isNotExist(String filePath) {
         File file = new File(filePath);
         return !file.exists();
+    }
+
+    public static void writeBytesToFile(byte[] bytes, String fileName) {
+        checkFilesDir();
+        String filePath = FILES_DIR + SEPARATOR + fileName;
+
+        try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
+            fileOutputStream.write(bytes);
+            fileOutputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static byte[] readBytesFromFile(String fileName) {
+        String filePath = FILES_DIR + SEPARATOR + fileName;
+        if (isNotExist(filePath)) {
+            throw new RuntimeException("Sorry, can not handle reading");
+        }
+        File file = new File(filePath);
+        byte[] bytes = new byte[0];
+        try {
+            bytes = Files.readAllBytes(file.toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bytes;
+    }
+
+    public static void copyFile(String sourceFile, String targetFile) {
+        byte[] bytes = readBytesFromFile(sourceFile);
+        writeBytesToFile(bytes, targetFile);
+    }
+
+    public static void moveFile(String sourceFile, String targetFile) {
+        String filePath = FILES_DIR + SEPARATOR + sourceFile;
+        byte[] bytes = readBytesFromFile(sourceFile);
+        writeBytesToFile(bytes, targetFile);
+        File file = new File(filePath);
+        file.delete();
     }
 }
