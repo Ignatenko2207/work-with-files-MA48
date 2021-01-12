@@ -1,7 +1,10 @@
 package ua.mainacademy.model;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 public class ConnectionInfo {
 
+    private AtomicLong updateTime;
     private Integer id;
     private Long time;
     private String connectionIP;
@@ -42,5 +45,13 @@ public class ConnectionInfo {
     @Override
     public String toString() {
         return id + " " + time + " " + connectionIP; // 1235 165454646534565 126.159.124.241
+    }
+
+    public AtomicLong getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(AtomicLong updateTime) {
+        this.updateTime = updateTime;
     }
 }
